@@ -67,7 +67,9 @@ SRCS += \
   ../watch_faces/complication/tomato_face.c \
   ../watch_faces/complication/probability_face.c \
   ../watch_faces/complication/wake_face.c \
+  ../watch_faces/complication/life_counter_face.c \
   ../watch_faces/demo/frequency_correction_face.c \
+  ../watch_faces/demo/test_face.c \
 # New watch faces go above this line.
 
 # Leave this line at the bottom of the file; it has all the targets for making your project.

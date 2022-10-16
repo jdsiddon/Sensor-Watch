@@ -33,17 +33,24 @@
 void pulsometer_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
+    // Allocate memory to store pulsometer state.
     if (*context_ptr == NULL) *context_ptr = malloc(sizeof(pulsometer_state_t));
 }
 
 void pulsometer_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
+    // The pulsometer doesn't maintain state between activations. 
+    // This 0's out the context before the watch face goes on screen.
+    // I could remove this line if I want to maintain state between watch face changes.
     memset(context, 0, sizeof(pulsometer_state_t));
 }
 
 bool pulsometer_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
     (void) settings;
+    // This gets our app context and casts it to the correct state type so we
+    // can actually reference it within our control loop.
     pulsometer_state_t *pulsometer_state = (pulsometer_state_t *)context;
+    // This creates a buffer for text we want to put on screen.
     char buf[14];
     switch (event.event_type) {
         case EVENT_MODE_BUTTON_UP:
@@ -56,6 +63,9 @@ bool pulsometer_face_loop(movement_event_t event, movement_settings_t *settings,
             pulsometer_state->measuring = true;
             pulsometer_state->pulse = 0xFFFF;
             pulsometer_state->ticks = 0;
+
+            // This sets the loop speed to go faster.
+            // Allows the screen to update faster.
             movement_request_tick_frequency(PULSOMETER_FACE_FREQUENCY);
             break;
         case EVENT_ALARM_BUTTON_UP:

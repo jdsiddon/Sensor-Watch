@@ -55,6 +55,8 @@
 #include "probability_face.h"
 #include "wake_face.h"
 #include "frequency_correction_face.h"
+#include "test_face.h"
+#include "life_counter_face.h"
 // New includes go above this line.
 
 #endif // MOVEMENT_FACES_H_

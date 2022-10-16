@@ -22,24 +22,27 @@
  * SOFTWARE.
  */
 
-#ifndef MOVEMENT_CONFIG_H_
-#define MOVEMENT_CONFIG_H_
+#ifndef TEST_FACE_H_
+#define TEST_FACE_H_
 
-#include "movement_faces.h"
+#include "movement.h"
 
-const watch_face_t watch_faces[] = {
-    simple_clock_face,
-    life_counter_face,
-    test_face,
-    // hello_there_face,
-    // world_clock_face,
-    // sunrise_sunset_face,
-    // moon_phase_face,
-    // thermistor_readout_face,
-    // preferences_face,
-    // set_time_face,
-};
+typedef struct {
+    uint8_t current_word;
+    bool animating;
+} test_state_t;
 
-#define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
+void test_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
+void test_face_activate(movement_settings_t *settings, void *context);
+bool test_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
+void test_face_resign(movement_settings_t *settings, void *context);
 
-#endif // MOVEMENT_CONFIG_H_
+#define test_face ((const watch_face_t){ \
+    test_face_setup, \
+    test_face_activate, \
+    test_face_loop, \
+    test_face_resign, \
+    NULL, \
+})
+
+#endif // TEST_FACE_H_
