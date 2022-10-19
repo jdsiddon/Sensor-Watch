@@ -29,7 +29,9 @@
 
 // Life counter face is designed to count the amount of life a player has remaining in the game of Magic the Gathering.
 typedef struct {
-    int8_t life_counter_idx;
+    int8_t *active_life_ctr;
+    int8_t life_counter_p1;
+    int8_t life_counter_p2;
 } life_counter_state_t;
 
 
@@ -38,6 +40,7 @@ void life_counter_face_activate(movement_settings_t *settings, void *context);
 bool life_counter_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
 void life_counter_face_resign(movement_settings_t *settings, void *context);
 
+void change_player(life_counter_state_t *state);
 void print_life_counter(life_counter_state_t *state);
 
 #define life_counter_face ((const watch_face_t){ \

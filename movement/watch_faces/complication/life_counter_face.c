@@ -32,13 +32,21 @@ void life_counter_face_setup(movement_settings_t *settings, uint8_t watch_face_i
     (void) watch_face_index;
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(life_counter_state_t));
-        memset(*context_ptr, 20, sizeof(life_counter_state_t));
+        memset(*context_ptr, 0, sizeof(life_counter_state_t));        
     }
 }
 
 void life_counter_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
+
+    // Initialize state if there wasn't one before.
+    life_counter_state_t *state = (life_counter_state_t *)context;
+    // if(state->active_life_ctr != &state->life_counter_p1 || state->active_life_ctr != &state->life_counter_p2) {
+        state->life_counter_p1 = 20;
+        state->life_counter_p2 = 20;
+        state->active_life_ctr = &state->life_counter_p1;
+    // }
 }
 
 bool life_counter_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -49,28 +57,33 @@ bool life_counter_face_loop(movement_event_t event, movement_settings_t *setting
     switch (event.event_type) {
         // Press light, decrement counter
         case EVENT_LIGHT_BUTTON_UP:
-            if (state->life_counter_idx == 0) {
-                state->life_counter_idx=20;//reset counter index
+            if (*state->active_life_ctr == 0) {
+                (*state->active_life_ctr)=20; //reset counter index
             } else {
-                state->life_counter_idx--; // decrement counter index
+                (*state->active_life_ctr)--; // decrement counter index
             }
             print_life_counter(state);
             break;
         // Press alarm, increment counter
         case EVENT_ALARM_BUTTON_UP:
-            state->life_counter_idx++; // increment counter index
-            if (state->life_counter_idx>99) { //0-99
-                state->life_counter_idx=0;//reset counter index
+            (*state->active_life_ctr)++; // increment counter index
+            if (*state->active_life_ctr>99) { //0-99
+                (*state->active_life_ctr)=0; //reset counter index
             }
             print_life_counter(state);
             break;
         // Reset Life
         case EVENT_ALARM_LONG_PRESS:
-            state->life_counter_idx=20; // reset counter index
+            (*state->active_life_ctr)=20; // reset counter index
             print_life_counter(state);
             break;
         case EVENT_MODE_BUTTON_UP:
             movement_move_to_next_face();
+            break;
+        // Change player
+        case EVENT_MODE_LONG_PRESS:
+            change_player(state);
+            print_life_counter(state);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             movement_illuminate_led();
@@ -88,10 +101,18 @@ bool life_counter_face_loop(movement_event_t event, movement_settings_t *setting
     return true;
 }
 
+void change_player(life_counter_state_t *state) {
+    if(state->active_life_ctr != &state->life_counter_p1) {
+        state->active_life_ctr = &state->life_counter_p1;
+    } else {
+        state->active_life_ctr = &state->life_counter_p2;
+    }
+}
+
 // print counter index at the center of display.
 void print_life_counter(life_counter_state_t *state) {
     char buf[14];
-    sprintf(buf, "LF    %02d", state->life_counter_idx); // center of LCD display
+    sprintf(buf, "LF1   %02d", *state->active_life_ctr); // center of LCD display
     watch_display_string(buf, 0);
 }
 
